@@ -1,0 +1,123 @@
+---
+import Header from './Header.astro';
+import { DEFAULTS } from '../scripts/mach-cone.js';
+
+const { minMach, maxMach, cruiseMach } = DEFAULTS;
+// Position of the Mach 1 tick along the throttle, 0 to 1.
+const m1 = (1 - minMach) / (maxMach - minMach);
+---
+
+<section class="hero" aria-labelledby="hero-title" data-hero>
+  <canvas class="hero-canvas" aria-hidden="true"></canvas>
+  <div class="hero-scrim" aria-hidden="true"></div>
+
+  <div class="frame">
+    <div class="frame-inner hero-inner">
+      <Header />
+
+      <div class="hero-body">
+        <p class="eyebrow">
+          <span class="label signal"><span class="live-dot" aria-hidden="true"></span>Team forming · autumn 2026</span>
+          <span class="label">ETH Zürich</span>
+        </p>
+        <h1 id="hero-title">
+          <span>Faster than sound.</span>
+          <span>Under 25 kg.</span>
+          <span class="dim">Built by students.</span>
+        </h1>
+        <p class="lede">
+          We are starting a team at ETH Zürich to design, build and fly a jet that breaks the sound barrier in level
+          flight, lands, and does it again the same day.
+        </p>
+        <div class="hero-cta">
+          <a class="btn btn-signal" href="#join">get involved <span class="arrow" aria-hidden="true">→</span></a>
+          <a class="btn" href="#mission">the mission <span class="arrow arrow-down" aria-hidden="true">↓</span></a>
+        </div>
+      </div>
+
+      <!-- Instrument strip. Values are written by the script below. -->
+      <div class="hud" style={`--m1: ${m1}`}>
+        <span class="cross cross-l" aria-hidden="true"></span>
+        <span class="cross cross-r" aria-hidden="true"></span>
+        <p class="hud-fig label" aria-hidden="true">Fig. 1 — sound waves from the aircraft, simulated live</p>
+
+        <div class="hud-cell" aria-hidden="true">
+          <span class="label">Mach</span>
+          <span class="hud-value" data-out="mach">{DEFAULTS.startMach.toFixed(2)}</span>
+          <span class="hud-note">speed ÷ speed of sound</span>
+        </div>
+        <div class="hud-cell hud-angle" aria-hidden="true">
+          <span class="label">Mach angle <span class="greek">μ</span></span>
+          <span class="hud-value" data-out="mu">—</span>
+          <span class="hud-note">arcsin(1 ÷ M)</span>
+        </div>
+        <div class="hud-cell" aria-hidden="true">
+          <span class="label">Above Mach 1</span>
+          <span class="hud-value" data-out="time">0.0 s</span>
+          <span class="hud-note" data-out="time-note">target ≥ 5 s</span>
+        </div>
+        <div class="hud-cell hud-throttle">
+          <label class="label" for="throttle">Throttle <span class="dim">· drag to change speed</span></label>
+          <input
+            class="throttle"
+            id="throttle"
+            type="range"
+            min={minMach}
+            max={maxMach}
+            step="0.01"
+            value={cruiseMach}
+            aria-valuetext={`Mach ${cruiseMach.toFixed(2)}`}
+          />
+          <span class="throttle-scale" aria-hidden="true">
+            <span>{minMach.toFixed(1)}</span>
+            <span class="signal" style={`left: ${m1 * 100}%`}>1.0</span>
+            <span>{maxMach.toFixed(1)}</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { machCone } from '../scripts/mach-cone.js';
+
+  const hero = document.querySelector<HTMLElement>('[data-hero]')!;
+  const canvas = hero.querySelector('canvas')!;
+  const throttle = hero.querySelector<HTMLInputElement>('#throttle')!;
+  const out = (name: string) => hero.querySelector<HTMLElement>(`[data-out="${name}"]`)!;
+  const mach = out('mach'), mu = out('mu'), time = out('time'), timeNote = out('time-note');
+
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Until someone grabs the throttle, it follows the run-up on load.
+  let touched = false;
+  let lastHud = 0;
+
+  const seconds = (s: number) =>
+    s < 60 ? `${s.toFixed(1)} s` : `${Math.floor(s / 60)}:${(s % 60).toFixed(1).padStart(4, '0')}`;
+
+  const sim = machCone(canvas, {
+    still,
+    onFrame(s: { mach: number; mu: number | null; superFor: number | null }) {
+      const now = performance.now();
+      if (!still && now - lastHud < 60) return; // ~16 updates a second is plenty for text
+      lastHud = now;
+      mach.textContent = s.mach.toFixed(2);
+      mach.classList.toggle('is-super', s.mach >= 1);
+      mu.textContent = s.mu === null ? '—' : `${s.mu.toFixed(1)}°`;
+      mu.classList.toggle('is-super', s.mu !== null);
+      const held = s.superFor === null ? s.mach >= 1 : s.superFor >= 5;
+      time.textContent = s.superFor === null ? (s.mach >= 1 ? 'steady' : '—') : seconds(s.superFor);
+      time.classList.toggle('is-super', held);
+      timeNote.innerHTML = held ? '<span class="ok">✓</span> target ≥ 5 s' : 'target ≥ 5 s';
+      if (!touched) throttle.value = String(s.mach);
+    },
+  });
+
+  throttle.addEventListener('input', () => {
+    touched = true;
+    const m = Number(throttle.value);
+    sim.setMach(m);
+    throttle.setAttribute('aria-valuetext', `Mach ${m.toFixed(2)}`);
+  });
+</script>

@@ -1,0 +1,40 @@
+---
+import { SITE } from '../site.config';
+import Mark from './Mark.astro';
+const year = new Date().getFullYear();
+const founders = SITE.founders.join(' and ');
+---
+
+<footer class="site-footer">
+  <span class="cross cross-l" aria-hidden="true"></span>
+  <span class="cross cross-r" aria-hidden="true"></span>
+  <div class="footer-grid">
+    <a class="wordmark" href="/"><Mark /><span>{SITE.name}</span></a>
+    <div>
+      <p>contact</p>
+      <p>
+        <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+        <button class="copy-email" type="button" data-copy={SITE.email}>copy</button>
+      </p>
+    </div>
+    <div>
+      <p>An independent student initiative at {SITE.team}.</p>
+      <p>Not affiliated with Boom Supersonic.</p>
+    </div>
+    <div>
+      <p>Started by {founders}, {SITE.location} {year}.</p>
+      <p>Orange after the Bell X-1, the first aircraft to fly faster than sound, 14 October 1947.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((b) => {
+    const label = b.textContent;
+    b.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(b.dataset.copy || ''); b.textContent = 'copied'; }
+      catch { b.textContent = 'select the address to copy'; }
+      setTimeout(() => (b.textContent = label), 2000);
+    });
+  });
+</script>

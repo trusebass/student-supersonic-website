@@ -1,0 +1,19 @@
+// Cloudflare Workers config: serves the static build in ./dist.
+// Deploy from the dashboard (Workers & Pages > Create > Import a repository)
+// or from the terminal with `npm run deploy`.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "student-supersonic-eth",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
+  }
+  // Once the domain is a zone in your Cloudflare account, either add it
+  // in the dashboard (Worker > Settings > Domains & Routes) or uncomment:
+  // ,"routes": [
+  //   { "pattern": "student-supersonic.com", "custom_domain": true },
+  //   { "pattern": "www.student-supersonic.com", "custom_domain": true }
+  // ]
+}

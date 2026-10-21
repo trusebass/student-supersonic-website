@@ -1,0 +1,28 @@
+---
+import { SITE } from '../site.config';
+import Mark from './Mark.astro';
+
+// Anchors on the front page. From other pages they lead back to it.
+const onHome = Astro.url.pathname === '/';
+const to = (hash: string) => (onHome ? hash : `/${hash}`);
+const nav = [
+  { href: to('#mission'), label: 'mission' },
+  { href: to('#race'), label: 'the race' },
+  { href: to('#problems'), label: 'problems' },
+  { href: to('#roadmap'), label: 'roadmap' },
+];
+---
+
+<header class="site-header">
+  <a class="wordmark" href="/" aria-label={`${SITE.name}, ${SITE.team}`}>
+    <Mark />
+    <span>{SITE.name}</span>
+    <span class="wordmark-team">/ {SITE.team}</span>
+  </a>
+  <nav aria-label="Main">
+    <ul>
+      {nav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+      <li><a class="btn btn-signal" href={to('#join')}>get involved <span class="arrow" aria-hidden="true">→</span></a></li>
+    </ul>
+  </nav>
+</header>

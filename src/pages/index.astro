@@ -1,0 +1,210 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import { SITE, MAIL } from '../site.config';
+import { TARGET, DISCIPLINES, TEAMS, ROADMAP } from '../data/home';
+
+const pad = (i: number) => String(i + 1).padStart(2, '0');
+const external = (href: string) => href.startsWith('http');
+---
+
+<Base ownHeader>
+  <Hero slot="top" />
+
+  <!-- 01 ------------------------------------------------------------ mission -->
+  <section class="section" id="mission" aria-labelledby="mission-h">
+    <span class="cross cross-l" aria-hidden="true"></span>
+    <span class="cross cross-r" aria-hidden="true"></span>
+    <div class="row">
+      <p class="section-label label"><span class="idx">01</span><span id="mission-h">Mission</span></p>
+      <div class="section-body">
+        <p class="statement">
+          A jet that weighs less than 25 kg, flies faster than sound in level flight, lands, and flies again the same
+          day. <span class="dim">Designed, built and flown by students.</span>
+        </p>
+        <div class="prose">
+          <p>
+            For almost eighty years, supersonic flight has belonged to governments and aerospace companies. The parts
+            to try it at small scale now exist: small turbojets, carbon composites, flight computers that fit in a
+            hand. Whether they can push 25 kg past Mach 1 in level flight, and bring it back in one piece, is an open
+            question.
+          </p>
+          <p><strong>We want to answer it at ETH, and we want the first answer to come from a student team.</strong></p>
+        </div>
+
+        <div>
+          <p class="sheet-head">
+            <span class="label">The target</span>
+            <span class="label">Status: nothing has flown yet</span>
+          </p>
+          <div class="sheet">
+            {TARGET.map((spec, i) => (
+              <div>
+                <span class="label">{pad(i)} · {spec.label}</span>
+                <p class="spec-value">{spec.value}</p>
+                <p class="spec-note">{spec.note}</p>
+              </div>
+            ))}
+          </div>
+          <p class="mono dim" style="margin-top: 1rem">
+            These are the rules of the <a class="link" href={SITE.links.boomPrize} target="_blank" rel="noopener">Boom Prize</a>.
+            We hold ourselves to them, even though a team outside the U.S. cannot enter it.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 --------------------------------------------------------------- race -->
+  <section class="section" id="race" aria-labelledby="race-h">
+    <span class="cross cross-l" aria-hidden="true"></span>
+    <span class="cross cross-r" aria-hidden="true"></span>
+    <div class="row">
+      <p class="section-label label"><span class="idx">02</span><span id="race-h">The race</span></p>
+      <div class="section-body">
+        <p class="statement">
+          Boom Supersonic has put up $800,000 for the first team to do this. <span class="dim">Only U.S. teams may enter.</span>
+        </p>
+        <div class="prose">
+          <!-- TODO(Sebastian): review this paragraph; it is the pitch to other universities and to backers. -->
+          <p>
+            Physics does not check passports. So we are starting the race for everyone else: an open challenge for
+            university teams across Europe and beyond, flying to the same rules. We are looking for backers to put a
+            prize behind it, and for teams who want to race.
+          </p>
+        </div>
+
+        <div>
+          <p class="sheet-head">
+            <span class="label">Student teams on the problem</span>
+            <a class="label link" href={MAIL.university}>add yours</a>
+          </p>
+          <div class="sheet">
+            {TEAMS.map((team) => (
+              <a
+                class="team"
+                data-status={team.status}
+                href={team.href}
+                {...(external(team.href) ? { target: '_blank', rel: 'noopener' } : {})}
+              >
+                <span class="team-where">
+                  <span class="label">{team.where}</span>
+                  <span class="status" data-status={team.status}>{team.status}</span>
+                </span>
+                <p class="team-name">{team.name}</p>
+                <p class="team-text">{team.text}</p>
+                <span class="team-cta">{team.cta} <span class="arrow" aria-hidden="true">{external(team.href) ? '↗' : '→'}</span></span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 ----------------------------------------------------------- problems -->
+  <section class="section" id="problems" aria-labelledby="problems-h">
+    <span class="cross cross-l" aria-hidden="true"></span>
+    <span class="cross cross-r" aria-hidden="true"></span>
+    <div class="row">
+      <p class="section-label label"><span class="idx">03</span><span id="problems-h">Problems</span></p>
+      <div class="section-body">
+        <p class="statement">
+          Five hard problems. <span class="dim">Pick the one you cannot stop thinking about.</span>
+        </p>
+        <div class="prose">
+          <p>
+            You do not need to know everything; nobody here does yet. Bring curiosity, time, and something you have
+            built. Bachelor, Master or PhD, from D&#8209;MAVT, D&#8209;ITET, D&#8209;INFK, D&#8209;PHYS, D&#8209;MATL or anywhere else.
+          </p>
+        </div>
+        <ol class="parts">
+          {DISCIPLINES.map((d, i) => (
+            <li class="part">
+              <span class="part-id label"><span class="signal">{pad(i)}</span> / {d.id}</span>
+              <h3 class="part-title">{d.title}</h3>
+              <div class="part-text-wrap">
+                <p class="part-text">{d.text}</p>
+                <ul class="tags">{d.tags.map((tag) => <li>{tag}</li>)}</ul>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 ------------------------------------------------------------ roadmap -->
+  <section class="section" id="roadmap" aria-labelledby="roadmap-h">
+    <span class="cross cross-l" aria-hidden="true"></span>
+    <span class="cross cross-r" aria-hidden="true"></span>
+    <div class="row">
+      <p class="section-label label"><span class="idx">04</span><span id="roadmap-h">Roadmap</span></p>
+      <div class="section-body">
+        <p class="statement">
+          Day one. <span class="dim">Nothing has flown yet. The first people in choose the engine, the airframe and
+          how we work.</span>
+        </p>
+        <ol class="timeline">
+          {ROADMAP.map((step) => (
+            <li class:list={{ 'is-now': step.now }}>
+              <span class="when">{step.when}</span>
+              <span class="phase">{step.phase}</span>
+              <span class="text">{step.text}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 --------------------------------------------------------------- join -->
+  <section class="section join" id="join" aria-labelledby="join-h">
+    <span class="cross cross-l" aria-hidden="true"></span>
+    <span class="cross cross-r" aria-hidden="true"></span>
+    <div class="row">
+      <p class="section-label label"><span class="idx">05</span><span>Get involved</span></p>
+      <div>
+        <h2 class="join-title" id="join-h">Build it <span class="signal">with us.</span></h2>
+        <div class="join-grid">
+          <div>
+            <!-- TODO(Sebastian): "We read every one" is a promise; keep it only if you will. -->
+            <p class="lede">
+              We are not taking applications yet. For now we want to meet the people who would want to build this.
+              Write us a few lines. We read every one.
+            </p>
+            <p class="email-line">
+              <a class="btn btn-signal" href={MAIL.student}>email us <span class="arrow" aria-hidden="true">→</span></a>
+              <button class="btn" type="button" data-copy={SITE.email}>copy address</button>
+            </p>
+            <p class="email-address mono"><a href={MAIL.student}>{SITE.email}</a></p>
+          </div>
+          <div>
+            <p class="label" style="margin: 0 0 0.75rem">What to put in it</p>
+            <ol class="checklist">
+              <li><span class="label signal">01</span><span>Who you are and what you study.</span></li>
+              <li><span class="label signal">02</span><span>Which of the five problems you would take on.</span></li>
+              <li><span class="label signal">03</span><span>Something you have built, coded, flown or broken.</span></li>
+              <li><span class="label signal">04</span><span>How much time you could give this year.</span></li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="also">
+          <a href={MAIL.university}>
+            <span class="label">Other universities</span>
+            <h3>Start a team</h3>
+            <p>Same rules, same bar. We share what we learn and build the challenge with you.</p>
+            <span class="team-cta">write to us <span class="arrow" aria-hidden="true">→</span></span>
+          </a>
+          <a href={MAIL.partner}>
+            <span class="label">Backers and partners</span>
+            <h3>Back the team, or the challenge</h3>
+            <p>We are looking for sponsors, mentors, workshop space and somewhere to fly.</p>
+            <span class="team-cta">partnerships <span class="arrow" aria-hidden="true">→</span></span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
